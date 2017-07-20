@@ -147,6 +147,18 @@ class ModelBuilder(object):
             service_status = element.ServiceState.DISABLED.value
         elif compute_service.disabled_reason == 'watcher_maintaining':
             service_status = element.ServiceState.MAINTAINING.value
+        # If compute node power off, set it in 'poweroff' status.
+        # If compute node power on, but not up, set it in 'poweron' status.
+        # If compute node power on, and up, set it in 'disabled' status,
+        # for further optimize.
+        elif compute_service.disabled_reason == 'watcher_poweroff':
+            service_status = element.ServiceState.POWEROFF.value
+        elif compute_service.disabled_reason == 'watcher_poweron' and
+            node.state == 'down':
+            service_status = element.ServiceState.POWERON.value
+        elif compute_service.disabled_reason == 'watcher_poweron' and
+            node.state == 'up':
+            service_status = element.ServiceState.DISABLED.value
         else:
             service_status = element.ServiceState.UNKNOWN.value
 

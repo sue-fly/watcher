@@ -126,6 +126,12 @@ class NovaNotification(base.NotificationEndpoint):
             node_status = element.ServiceState.DISABLED.value
         elif node_data['disabled_reason'] == 'watcher_maintaining':
             node_status = element.ServiceState.MAINTAINING.value
+        # It will take seconds to up after power on for compute node
+        # Here just update the node status to 'poweron'
+        elif node_data['disabled_reason'] == 'watcher_poweron':
+            node_status = element.ServiceState.POWERON.value
+        elif node_data['disabled_reason'] == 'watcher_poweroff':
+            node_status = element.ServiceState.POWEROFF.value
         else:
             node_status = element.ServiceState.UNKNOWN.value
 

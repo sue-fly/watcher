@@ -366,3 +366,11 @@ class ClusterMaintenanceBaseStrategy(BaseStrategy):
     @classmethod
     def get_goal_name(cls):
         return "cluster_maintaining"
+
+
+@six.add_metaclass(abc.ABCMeta)
+class PowerSaveBaseStrategy(BaseStrategy):
+
+    @classmethod
+    def get_goal_name(cls):
+        return "power_saving"

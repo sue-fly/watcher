@@ -28,6 +28,8 @@ class ServiceState(enum.Enum):
     ENABLED = 'enabled'
     DISABLED = 'disabled'
     MAINTAINING = 'maintaining'
+    POWERON = 'poweron'  # poweron but not online
+    POWEROFF = 'poweroff'
     UNKNOWN = 'unknown'
 
 

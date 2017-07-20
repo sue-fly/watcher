@@ -217,3 +217,27 @@ class ClusterMaintaining(base.Goal):
     def get_efficacy_specification(cls):
         """The efficacy spec for the current goal"""
         return specs.Unclassified()
+
+
+class PowerSaving(base.Goal):
+    """PowerSaving
+
+    This goal is used to save power for data center.
+    """
+
+    @classmethod
+    def get_name(cls):
+        return "power_saving"
+
+    @classmethod
+    def get_display_name(cls):
+        return _("Power Saving")
+
+    @classmethod
+    def get_translatable_display_name(cls):
+        return "Power Saving"
+
+    @classmethod
+    def get_efficacy_specification(cls):
+        """The efficacy spec for the current goal"""
+        return specs.Unclassified()

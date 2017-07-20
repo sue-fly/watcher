@@ -68,7 +68,9 @@ class ChangeNovaServiceState(base.BaseAction):
                              element.ServiceState.OFFLINE.value,
                              element.ServiceState.ENABLED.value,
                              element.ServiceState.DISABLED.value,
-                             element.ServiceState.MAINTAINING.value]
+                             element.ServiceState.MAINTAINING.value,
+                             element.ServiceState.POWERON.value,
+                             element.ServiceState.POWEROFF.value]
                 },
                 'target': {
                     'type': 'string',
@@ -76,7 +78,9 @@ class ChangeNovaServiceState(base.BaseAction):
                              element.ServiceState.OFFLINE.value,
                              element.ServiceState.ENABLED.value,
                              element.ServiceState.DISABLED.value,
-                             element.ServiceState.MAINTAINING.value]
+                             element.ServiceState.MAINTAINING.value
+                             element.ServiceState.POWERON.value,
+                             element.ServiceState.POWEROFF.value]
                 }
             },
             'required': ['resource_id', 'current', 'target'],
@@ -122,6 +126,14 @@ class ChangeNovaServiceState(base.BaseAction):
         elif state == element.ServiceState.MAINTAINING.value:
             return nova.disable_service_nova_compute(self.host,
                                                      'watcher_maintaining')
+        # update disable reason if power-on or power-off one compute node,
+        # for power saving 
+        elif state == element.ServiceState.POWERON.value:
+            return nova.disable_service_nova_compute(self.host,
+                                                     'watcher_poweron')
+        elif state == element.ServiceState.POWEROFF.value:
+            return nova.disable_service_nova_compute(self.host,
+                                                     'watcher_poweroff')
 
     def pre_condition(self):
         pass
