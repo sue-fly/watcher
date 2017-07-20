@@ -119,9 +119,13 @@ class NovaNotification(base.NotificationEndpoint):
         node_state = (
             element.ServiceState.OFFLINE.value
             if node_data['forced_down'] else element.ServiceState.ONLINE.value)
-        node_status = (
-            element.ServiceState.DISABLED.value
-            if node_data['disabled'] else element.ServiceState.ENABLED.value)
+
+        if not node_data['disabled']:
+            node_status = element.ServiceState.ENABLED.value
+        elif node_data['disabled_reason'] == 'watcher_disabled':
+            node_status = element.ServiceState.DISABLED.value
+        else:
+            node_status = element.ServiceState.UNKNOWN.value
 
         node.update({
             'hostname': node_data['host'],

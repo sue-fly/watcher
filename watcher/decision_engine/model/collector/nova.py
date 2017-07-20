@@ -141,6 +141,14 @@ class ModelBuilder(object):
             "state": node.state,
             "status": node.status}
 
+        if compute_service.status == 'enabled':
+            service_status = element.ServiceState.ENABLED.value
+        elif compute_service.disabled_reason == 'watcher_disabled':
+            service_status = element.ServiceState.DISABLED.value
+        else:
+            service_status = element.ServiceState.UNKNOWN.value
+
+        node_attributes["status"] = service_status
         compute_node = element.ComputeNode(**node_attributes)
         # compute_node = self._build_node("physical", "compute", "hypervisor",
         #                                 node_attributes)

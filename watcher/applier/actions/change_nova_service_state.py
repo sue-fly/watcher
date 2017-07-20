@@ -27,26 +27,31 @@ from watcher.decision_engine.model import element
 
 
 class ChangeNovaServiceState(base.BaseAction):
-    """Disables or enables the nova-compute service, deployed on a host
+    """Change the state of nova-compute service, deployed on a host
 
     By using this action, you will be able to update the state of a
     nova-compute service. A disabled nova-compute service can not be selected
-    by the nova scheduler for future deployment of server.
+    by the nova scheduler for furture deployment of server. A maintaining
+    nova-compute service can not be selected by Watcher for future migration
+    of instances.
 
     The action schema is::
 
         schema = Schema({
          'resource_id': str,
-         'state': str,
+         'current': str,
+         'target': str,
         })
 
     The `resource_id` references a nova-compute service name (list of available
     nova-compute services is returned by this command: ``nova service-list
     --binary nova-compute``).
-    The `state` value should either be `ONLINE` or `OFFLINE`.
+    The `current` and 'target' value should be one of `ENABLED`, `DISABLED`,
+    'MAINTAINING'.
     """
 
-    STATE = 'state'
+    CURRENT_STATE = 'current'
+    TARGET_STATE = 'target'
 
     @property
     def schema(self):
@@ -57,7 +62,14 @@ class ChangeNovaServiceState(base.BaseAction):
                     'type': 'string',
                     "minlength": 1
                 },
-                'state': {
+                'current': {
+                    'type': 'string',
+                    'enum': [element.ServiceState.ONLINE.value,
+                             element.ServiceState.OFFLINE.value,
+                             element.ServiceState.ENABLED.value,
+                             element.ServiceState.DISABLED.value]
+                },
+                'target': {
                     'type': 'string',
                     'enum': [element.ServiceState.ONLINE.value,
                              element.ServiceState.OFFLINE.value,
@@ -65,7 +77,7 @@ class ChangeNovaServiceState(base.BaseAction):
                              element.ServiceState.DISABLED.value]
                 }
             },
-            'required': ['resource_id', 'state'],
+            'required': ['resource_id', 'current', 'target'],
             'additionalProperties': False,
         }
 
@@ -81,24 +93,18 @@ class ChangeNovaServiceState(base.BaseAction):
         return self.resource_id
 
     @property
-    def state(self):
-        return self.input_parameters.get(self.STATE)
+    def current_state(self):
+        return self.input_parameters.get(self.CURRENT_STATE)
+
+    @property
+    def target_state(self):
+        return self.input_parameters.get(self.TARGET_STATE)
 
     def execute(self):
-        target_state = None
-        if self.state == element.ServiceState.DISABLED.value:
-            target_state = False
-        elif self.state == element.ServiceState.ENABLED.value:
-            target_state = True
-        return self._nova_manage_service(target_state)
+        return self._nova_manage_service(self.target_state)
 
     def revert(self):
-        target_state = None
-        if self.state == element.ServiceState.DISABLED.value:
-            target_state = True
-        elif self.state == element.ServiceState.ENABLED.value:
-            target_state = False
-        return self._nova_manage_service(target_state)
+        return self._nova_manage_service(self.current_state)
 
     def _nova_manage_service(self, state):
         if state is None:
@@ -106,10 +112,11 @@ class ChangeNovaServiceState(base.BaseAction):
                 message=_("The target state is not defined"))
 
         nova = nova_helper.NovaHelper(osc=self.osc)
-        if state is True:
+        if state == element.ServiceState.ENABLED.value:
             return nova.enable_service_nova_compute(self.host)
-        else:
-            return nova.disable_service_nova_compute(self.host)
+        elif state == element.ServiceState.DISABLED.value:
+            return nova.disable_service_nova_compute(self.host,
+                                                     'watcher_disabled')
 
     def pre_condition(self):
         pass
@@ -119,6 +126,8 @@ class ChangeNovaServiceState(base.BaseAction):
 
     def get_description(self):
         """Description of the action"""
-        return ("Disables or enables the nova-compute service."
+        return ("Change the state of nova-compute service."
                 "A disabled nova-compute service can not be selected "
-                "by the nova for future deployment of new server.")
+                "by the nova for furture deployment of new instances. "
+                "A maintaining nova-compute service can not be selected "
+                "by Watcher for furture migration of instances.")

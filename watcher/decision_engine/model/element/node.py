@@ -27,6 +27,7 @@ class ServiceState(enum.Enum):
     OFFLINE = 'down'
     ENABLED = 'enabled'
     DISABLED = 'disabled'
+    UNKNOWN = 'unknown'
 
 
 @base.WatcherObjectRegistry.register_if(False)
