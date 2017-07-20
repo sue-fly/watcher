@@ -67,14 +67,16 @@ class ChangeNovaServiceState(base.BaseAction):
                     'enum': [element.ServiceState.ONLINE.value,
                              element.ServiceState.OFFLINE.value,
                              element.ServiceState.ENABLED.value,
-                             element.ServiceState.DISABLED.value]
+                             element.ServiceState.DISABLED.value,
+                             element.ServiceState.MAINTAINING.value]
                 },
                 'target': {
                     'type': 'string',
                     'enum': [element.ServiceState.ONLINE.value,
                              element.ServiceState.OFFLINE.value,
                              element.ServiceState.ENABLED.value,
-                             element.ServiceState.DISABLED.value]
+                             element.ServiceState.DISABLED.value,
+                             element.ServiceState.MAINTAINING.value]
                 }
             },
             'required': ['resource_id', 'current', 'target'],
@@ -117,6 +119,9 @@ class ChangeNovaServiceState(base.BaseAction):
         elif state == element.ServiceState.DISABLED.value:
             return nova.disable_service_nova_compute(self.host,
                                                      'watcher_disabled')
+        elif state == element.ServiceState.MAINTAINING.value:
+            return nova.disable_service_nova_compute(self.host,
+                                                     'watcher_maintaining')
 
     def pre_condition(self):
         pass

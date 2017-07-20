@@ -265,6 +265,11 @@ class AuditReferenced(Invalid):
                 "plans")
 
 
+class AuditSolutionNotFound(WatcherException):
+    msg_fmt = _("Solution for strategy %(strategy)s "
+                "could not be found. Reason: %(reason)s")
+
+
 class ActionPlanNotFound(ResourceNotFound):
     msg_fmt = _("ActionPlan %(action_plan)s could not be found")
 

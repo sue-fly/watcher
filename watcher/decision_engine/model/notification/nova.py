@@ -124,6 +124,8 @@ class NovaNotification(base.NotificationEndpoint):
             node_status = element.ServiceState.ENABLED.value
         elif node_data['disabled_reason'] == 'watcher_disabled':
             node_status = element.ServiceState.DISABLED.value
+        elif node_data['disabled_reason'] == 'watcher_maintaining':
+            node_status = element.ServiceState.MAINTAINING.value
         else:
             node_status = element.ServiceState.UNKNOWN.value
 

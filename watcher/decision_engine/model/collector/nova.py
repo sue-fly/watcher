@@ -145,6 +145,8 @@ class ModelBuilder(object):
             service_status = element.ServiceState.ENABLED.value
         elif compute_service.disabled_reason == 'watcher_disabled':
             service_status = element.ServiceState.DISABLED.value
+        elif compute_service.disabled_reason == 'watcher_maintaining':
+            service_status = element.ServiceState.MAINTAINING.value
         else:
             service_status = element.ServiceState.UNKNOWN.value
 

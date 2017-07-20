@@ -192,3 +192,28 @@ class NoisyNeighborOptimization(base.Goal):
     def get_efficacy_specification(cls):
         """The efficacy spec for the current goal"""
         return specs.Unclassified()
+
+
+class ClusterMaintaining(base.Goal):
+    """ClusterMaintenance
+
+    This goal is used to maintain compute nodes
+    without having the user's application being interupted.
+    """
+
+    @classmethod
+    def get_name(cls):
+        return "cluster_maintaining"
+
+    @classmethod
+    def get_display_name(cls):
+        return _("Cluster Maintaining")
+
+    @classmethod
+    def get_translatable_display_name(cls):
+        return "Cluster Maintaining"
+
+    @classmethod
+    def get_efficacy_specification(cls):
+        """The efficacy spec for the current goal"""
+        return specs.Unclassified()
